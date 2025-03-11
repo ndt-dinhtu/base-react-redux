@@ -1,13 +1,22 @@
+import axios from "axios";
 import { useState } from "react";
 import Button from "react-bootstrap/Button";
 import Modal from "react-bootstrap/Modal";
 import { CgAdd } from "react-icons/cg";
 
-const Example = () => {
-  const [show, setShow] = useState(false);
+const ModalCreateUser = (props) => {
+  const { show, setShow } = props;
 
-  const handleClose = () => setShow(false);
-  const handleShow = () => setShow(true);
+  const handleClose = () => {
+    setShow(false);
+    setEmail("");
+    setPassword("")
+    setUsername("");
+    setRole("USER");
+    setImage("");
+    setPreviewImage("");
+  };
+ 
 
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -24,12 +33,27 @@ const Example = () => {
       setPreviewImage("");
     }
   };
+
+  const handleUpLoadImage = async () => {
+    const form = new FormData();
+    form.append("email", email);
+    form.append("password", password);
+    form.append("username", username);
+    form.append("role", role);
+    form.append("image", image);
+
+    let res = await axios.post(
+      "http://localhost:8081/api/v1/participant",
+      form
+    );
+    console.log("check: ", res.data);
+    console.log("Image file: ", image);
+    alert("check: ", res.data);
+    alert("Image file: ", image);
+  };
+
   return (
     <>
-      <Button variant="primary" onClick={handleShow}>
-        Add new user
-      </Button>
-
       <Modal
         show={show}
         onHide={handleClose}
@@ -88,7 +112,7 @@ const Example = () => {
                 type="file"
                 hidden
                 id="labelUpload"
-                onChange={(event) => handlUploadImage(event)}
+                onChange={() => handlUploadImage()}
               />
             </div>
             <div className="col-md-12 img-preview">
@@ -104,7 +128,7 @@ const Example = () => {
           <Button variant="secondary" onClick={handleClose}>
             Close
           </Button>
-          <Button variant="primary" onClick={handleClose}>
+          <Button variant="primary" onClick={() => handleUpLoadImage()}>
             Save
           </Button>
         </Modal.Footer>
@@ -113,4 +137,4 @@ const Example = () => {
   );
 };
 
-export default Example;
+export default ModalCreateUser;
